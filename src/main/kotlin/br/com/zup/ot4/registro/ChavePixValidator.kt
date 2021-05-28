@@ -25,7 +25,7 @@ class ChavePixValidator(
             }
             TipoChave.CELULAR -> {
                 require(!_chavePix.isNullOrBlank()) { "Celular deve ser preenchido"}
-                require(_chavePix.matches("^+[1-9][0-9]{1,14}$".toRegex())) { "Celular deve ter formato válido"}
+                require(_chavePix.matches("^\\+[1-9][0-9]\\d{1,14}\$".toRegex())) { "Celular deve ter formato válido"}
                 chaveTemporaria = _chavePix
             }
             TipoChave.EMAIL -> {

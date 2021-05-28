@@ -1,4 +1,4 @@
-package br.com.zup.ot4.registro
+package br.com.zup.ot4.compartilhado
 
 import io.micronaut.transaction.annotation.TransactionalAdvice
 import javax.inject.Inject
