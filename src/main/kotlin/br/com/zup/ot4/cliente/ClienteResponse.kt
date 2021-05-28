@@ -1,4 +1,4 @@
-package br.com.zup.ot4.integracoes.itau
+package br.com.zup.ot4.cliente
 
 import br.com.zup.ot4.cliente.Cliente
 import br.com.zup.ot4.cliente.Instituicao

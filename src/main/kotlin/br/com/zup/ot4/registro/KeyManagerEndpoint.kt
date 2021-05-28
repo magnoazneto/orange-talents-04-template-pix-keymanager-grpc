@@ -9,6 +9,7 @@ import br.com.zup.ot4.pix.ChavePix
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import io.micronaut.http.HttpStatus
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,34 +24,28 @@ class KeyManagerEndpoint(
         responseObserver: StreamObserver<ChavePixResponse>
     ) {
         try{
-            val httpResponse = itauClient.consultaCliente(request.idExternoCliente)
-            if(httpResponse.status == HttpStatus.NOT_FOUND){
+            request.valida()
+            val clienteResponse = itauClient.consultaCliente(request.idExternoCliente)
+            if(clienteResponse.status == HttpStatus.NOT_FOUND){
                 responseObserver.onError(Status.INVALID_ARGUMENT
                     .withDescription("id do cliente não encontrado no ERP")
                     .asRuntimeException())
+                return
             }
 
-            val clienteResponse = httpResponse.body()
-
-            val validator = ChavePixValidator(
-                request.idExternoCliente,
-                request.chavePix,
-                request.tipoChave,
-                request.tipoConta
+            val chavePix = ChavePix(
+                chave = request.chavePix ?: UUID.randomUUID().toString(),
+                tipoChave = request.tipoChave,
+                tipoConta = request.tipoConta,
+                cliente = clienteResponse.body()!!.toClient()
             )
 
-            val chavePix = ChavePix(
-                validator.chavePix!!,
-                validator.tipoChave,
-                validator.tipoConta,
-                clienteResponse!!.toClient()
-            ).also { transaction.saveAndCommit(it) }
+            transaction.saveAndCommit(chavePix)
 
-            val response = ChavePixResponse.newBuilder()
-                .setPixId(chavePix.uuid.toString()).build()
-
-            responseObserver.onNext(response)
-            responseObserver.onCompleted()
+            with(responseObserver){
+                onNext(ChavePixResponse.newBuilder().setPixId(chavePix.uuid.toString()).build())
+                onCompleted()
+            }
 
         } catch (e: IllegalArgumentException){
             responseObserver.onError(Status.INVALID_ARGUMENT

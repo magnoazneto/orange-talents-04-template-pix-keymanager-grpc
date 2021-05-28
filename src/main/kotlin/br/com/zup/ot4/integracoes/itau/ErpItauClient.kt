@@ -1,5 +1,6 @@
 package br.com.zup.ot4.integracoes.itau
 
+import br.com.zup.ot4.cliente.ClienteResponse
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
