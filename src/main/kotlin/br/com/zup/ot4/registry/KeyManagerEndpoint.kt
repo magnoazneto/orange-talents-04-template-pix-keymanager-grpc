@@ -6,6 +6,7 @@ import br.com.zup.ot4.PixKeyResponse
 import br.com.zup.ot4.shared.Transaction
 import br.com.zup.ot4.integrations.ErpItauClient
 import br.com.zup.ot4.pix.PixKeyRepository
+import br.com.zup.ot4.registry.extensions.toValidPixKey
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import javax.inject.Inject
@@ -36,7 +37,7 @@ class KeyManagerEndpoint(
                 .withDescription(e.message)
                 .withCause(e)
                 .asRuntimeException())
-        } catch (e: ChavePixExistenteException) {
+        } catch (e: ExistingPixKeyException) {
             responseObserver.onError(Status.ALREADY_EXISTS
                 .withDescription(e.message)
                 .withCause(e)
