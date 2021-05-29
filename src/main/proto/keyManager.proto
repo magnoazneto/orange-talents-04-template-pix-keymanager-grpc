@@ -8,30 +8,30 @@ option objc_class_prefix = "HLW";
 package br.com.zup.ot4;
 
 service KeyManagerService {
-  rpc registrar(ChavePixRequest) returns (ChavePixResponse) {}
+  rpc register(PixKeyRequest) returns (PixKeyResponse) {}
 }
 
-enum TipoChave {
-  TIPO_CHAVE_DESCONHECIDO = 0;
+enum KeyType {
+  UNKNOW_KEY_TYPE = 0;
   CPF = 1;
-  CELULAR = 2;
+  PHONE_NUMBER = 2;
   EMAIL = 3;
-  ALEATORIA = 4;
+  RANDOM_KEY = 4;
 }
 
-enum TipoConta {
-  TIPO_CONTA_DESCONHECIDO = 0;
+enum AccountType {
+  UNKNOW_ACCOUNT_TYPE = 0;
   CONTA_CORRENTE = 1;
   CONTA_POUPANCA = 2;
 }
 
-message ChavePixRequest {
-  string idExternoCliente = 1;
-  string chavePix = 2;
-  TipoChave tipoChave = 3;
-  TipoConta tipoConta = 4;
+message PixKeyRequest {
+  string externalClientId = 1;
+  string pixKey = 2;
+  KeyType keyType = 3;
+  AccountType accountType = 4;
 }
 
-message ChavePixResponse {
+message PixKeyResponse {
   string pixId = 1;
 }

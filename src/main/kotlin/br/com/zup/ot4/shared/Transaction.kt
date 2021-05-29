@@ -1,4 +1,4 @@
-package br.com.zup.ot4.compartilhado
+package br.com.zup.ot4.shared
 
 import io.micronaut.transaction.annotation.TransactionalAdvice
 import javax.inject.Inject

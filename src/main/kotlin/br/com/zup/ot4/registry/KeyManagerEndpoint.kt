@@ -1,11 +1,11 @@
-package br.com.zup.ot4.registro
+package br.com.zup.ot4.registry
 
-import br.com.zup.ot4.ChavePixRequest
-import br.com.zup.ot4.ChavePixResponse
 import br.com.zup.ot4.KeyManagerServiceGrpc
-import br.com.zup.ot4.compartilhado.Transaction
-import br.com.zup.ot4.integracoes.itau.ErpItauClient
-import br.com.zup.ot4.pix.ChavePixRepository
+import br.com.zup.ot4.PixKeyRequest
+import br.com.zup.ot4.PixKeyResponse
+import br.com.zup.ot4.shared.Transaction
+import br.com.zup.ot4.integrations.ErpItauClient
+import br.com.zup.ot4.pix.PixKeyRepository
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import javax.inject.Inject
@@ -15,19 +15,19 @@ import javax.inject.Singleton
 class KeyManagerEndpoint(
     @Inject val transaction: Transaction,
     @Inject val itauClient: ErpItauClient,
-    @Inject val chavePixRepository: ChavePixRepository
+    @Inject val pixKeyRepository: PixKeyRepository
 ) : KeyManagerServiceGrpc.KeyManagerServiceImplBase() {
 
-    override fun registrar(
-        request: ChavePixRequest,
-        responseObserver: StreamObserver<ChavePixResponse>
+    override fun register(
+        request: PixKeyRequest,
+        responseObserver: StreamObserver<PixKeyResponse>
     ) {
         try{
-            val chavePix = request.converteParaChaveValida(itauClient, chavePixRepository)
+            val chavePix = request.toValidPixKey(itauClient, pixKeyRepository)
             transaction.saveAndCommit(chavePix)
 
             with(responseObserver){
-                onNext(ChavePixResponse.newBuilder().setPixId(chavePix.uuid.toString()).build())
+                onNext(PixKeyResponse.newBuilder().setPixId(chavePix.uuid.toString()).build())
                 onCompleted()
             }
 
