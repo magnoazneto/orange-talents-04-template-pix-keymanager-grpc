@@ -6,8 +6,9 @@ import br.com.zup.ot4.PixKeyRequest
 import br.com.zup.ot4.integrations.ErpItauClient
 import br.com.zup.ot4.pix.PixKey
 import br.com.zup.ot4.pix.PixKeyRepository
-import br.com.zup.ot4.registry.ExistingPixKeyException
+import br.com.zup.ot4.shared.exceptions.ExistingPixKeyException
 import io.micronaut.http.HttpStatus
+import java.util.*
 
 fun PixKeyRequest.toValidPixKey(
     itauClient: ErpItauClient,
@@ -23,7 +24,7 @@ fun PixKeyRequest.toValidPixKey(
     if (response.status == HttpStatus.NOT_FOUND) throw IllegalArgumentException("Conta não encontrada no ERP")
 
     return PixKey(
-        key = pixKey,
+        key = if(keyType != KeyType.RANDOM_KEY) pixKey else UUID.randomUUID().toString(),
         keyType = keyType,
         accountData = response.body()!!.toModel()
     )
