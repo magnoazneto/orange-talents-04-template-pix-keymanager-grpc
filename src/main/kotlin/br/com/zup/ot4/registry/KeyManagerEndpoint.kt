@@ -7,11 +7,13 @@ import br.com.zup.ot4.shared.Transaction
 import br.com.zup.ot4.integrations.ErpItauClient
 import br.com.zup.ot4.pix.PixKeyRepository
 import br.com.zup.ot4.registry.extensions.toValidPixKey
+import br.com.zup.ot4.shared.errors.ErrorHandler
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@ErrorHandler
 @Singleton
 class KeyManagerEndpoint(
     @Inject val transaction: Transaction,
@@ -23,25 +25,12 @@ class KeyManagerEndpoint(
         request: PixKeyRequest,
         responseObserver: StreamObserver<PixKeyResponse>
     ) {
-        try{
-            val chavePix = request.toValidPixKey(itauClient, pixKeyRepository)
-            transaction.saveAndCommit(chavePix)
+        val chavePix = request.toValidPixKey(itauClient, pixKeyRepository)
+        transaction.saveAndCommit(chavePix)
 
-            with(responseObserver){
-                onNext(PixKeyResponse.newBuilder().setPixId(chavePix.uuid.toString()).build())
-                onCompleted()
-            }
-
-        } catch (e: IllegalArgumentException){
-            responseObserver.onError(Status.INVALID_ARGUMENT
-                .withDescription(e.message)
-                .withCause(e)
-                .asRuntimeException())
-        } catch (e: ExistingPixKeyException) {
-            responseObserver.onError(Status.ALREADY_EXISTS
-                .withDescription(e.message)
-                .withCause(e)
-                .asRuntimeException())
+        with(responseObserver){
+            onNext(PixKeyResponse.newBuilder().setPixId(chavePix.uuid.toString()).build())
+            onCompleted()
         }
     }
 }
