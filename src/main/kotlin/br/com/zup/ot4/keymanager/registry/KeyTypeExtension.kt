@@ -1,4 +1,4 @@
-package br.com.zup.ot4.registry.extensions
+package br.com.zup.ot4.keymanager.registry
 
 import br.com.zup.ot4.KeyType
 

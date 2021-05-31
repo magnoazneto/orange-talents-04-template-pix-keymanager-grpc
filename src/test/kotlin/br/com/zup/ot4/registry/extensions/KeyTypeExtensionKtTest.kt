@@ -3,6 +3,7 @@ package br.com.zup.ot4.registry.extensions
 import br.com.zup.ot4.AccountType
 import br.com.zup.ot4.KeyType
 import br.com.zup.ot4.PixKeyRequest
+import br.com.zup.ot4.keymanager.registry.validate
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

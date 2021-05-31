@@ -9,6 +9,7 @@ package br.com.zup.ot4;
 
 service KeyManagerService {
   rpc register(PixKeyRequest) returns (PixKeyResponse) {}
+  rpc remove(RemoveKeyRequest) returns (RemoveKeyResponse) {}
 }
 
 enum KeyType {
@@ -34,4 +35,13 @@ message PixKeyRequest {
 
 message PixKeyResponse {
   string pixId = 1;
+}
+
+message RemoveKeyRequest {
+  string pixId = 1;
+  string externalClientId = 2;
+}
+
+message RemoveKeyResponse {
+  bool success = 1;
 }

@@ -1,9 +1,10 @@
-package br.com.zup.ot4.registry.extensions
+package br.com.zup.ot4.keymanager.registry
 
 import br.com.zup.ot4.AccountType
 import br.com.zup.ot4.KeyType
 import br.com.zup.ot4.PixKeyRequest
 import br.com.zup.ot4.integrations.ErpItauClient
+import br.com.zup.ot4.keymanager.registry.validate
 import br.com.zup.ot4.pix.PixKey
 import br.com.zup.ot4.pix.PixKeyRepository
 import br.com.zup.ot4.shared.exceptions.ExistingPixKeyException
