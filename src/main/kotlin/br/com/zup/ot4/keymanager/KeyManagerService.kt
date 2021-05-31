@@ -4,6 +4,7 @@ import br.com.zup.ot4.PixKeyRequest
 import br.com.zup.ot4.RemoveKeyRequest
 import br.com.zup.ot4.integrations.BcbClient
 import br.com.zup.ot4.integrations.ErpItauClient
+import br.com.zup.ot4.integrations.bcbTypes.DeletePixKeyBcbRequest
 import br.com.zup.ot4.integrations.bcbTypes.PixKeyBcbRequest
 import br.com.zup.ot4.keymanager.registry.validateRequestParams
 import br.com.zup.ot4.keymanager.remove.validate
@@ -48,7 +49,13 @@ class KeyManagerService(
 
     fun remove(request: RemoveKeyRequest){
         val validatedPixKey = request.validate(pixKeyRepository)
-        // chamar o bcb
+        val bcbResponse = bcbClient.removePixKey(
+            validatedPixKey.key, DeletePixKeyBcbRequest(
+                validatedPixKey.key,
+                validatedPixKey.accountData.ispb
+            )
+        )
+        check(bcbResponse.status == HttpStatus.OK) { "Falha na remoção de chave no BCB" }
         transaction.exec { pixKeyRepository.deleteById(validatedPixKey.id!!) }
     }
 }
