@@ -49,6 +49,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
     runtimeOnly("com.h2database:h2")
     testImplementation("org.mockito:mockito-core:3.8.0")
+    implementation("io.micronaut.xml:micronaut-jackson-xml")
 
 }
 

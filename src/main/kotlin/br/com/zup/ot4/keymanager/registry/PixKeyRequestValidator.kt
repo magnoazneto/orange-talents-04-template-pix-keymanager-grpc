@@ -11,22 +11,12 @@ import br.com.zup.ot4.shared.exceptions.ExistingPixKeyException
 import io.micronaut.http.HttpStatus
 import java.util.*
 
-fun PixKeyRequest.toValidPixKey(
-    itauClient: ErpItauClient,
+fun PixKeyRequest.validateRequestParams(
     pixKeyRepository: PixKeyRepository
-) : PixKey {
-
+) {
     keyType.validate(pixKey)
 
     require(accountType != AccountType.UNKNOW_ACCOUNT_TYPE) { "Tipo de Conta desconhecido" }
     if(pixKeyRepository.existsByKey(pixKey)) throw ExistingPixKeyException("Chave PIX igual já cadastrada")
 
-    val response = itauClient.searchAccount(externalClientId, accountType.toString())
-    check(response.status != HttpStatus.NOT_FOUND){ "Conta não encontrada no ERP" }
-
-    return PixKey(
-        key = if(keyType != KeyType.RANDOM_KEY) pixKey else UUID.randomUUID().toString(),
-        keyType = keyType,
-        accountData = response.body()!!.toModel()
-    )
 }
