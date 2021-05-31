@@ -18,4 +18,9 @@ class Transaction(
         return obj
     }
 
+    @Transactional
+    fun exec(f: () -> Any): Any {
+        return f.invoke()
+    }
+
 }

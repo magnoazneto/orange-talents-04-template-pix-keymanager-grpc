@@ -1,4 +1,4 @@
-package br.com.zup.ot4.registry
+package br.com.zup.ot4.keymanager
 
 import br.com.zup.ot4.AccountType
 import br.com.zup.ot4.KeyManagerServiceGrpc
@@ -29,7 +29,7 @@ import java.util.*
 import javax.inject.Inject
 
 @MicronautTest(transactional = false)
-internal class KeyManagerEndpointTest(
+internal class KeyManagerEndpointRegisterTest(
     val pixKeyRepository: PixKeyRepository,
     val grpcClient: KeyManagerServiceGrpc.KeyManagerServiceBlockingStub
 ){

@@ -37,7 +37,7 @@ class KeyManagerEndpoint(
         responseObserver: StreamObserver<RemoveKeyResponse>
     ) {
         val validatedPixKey = request.validate(pixKeyRepository)
-        pixKeyRepository.deleteById(validatedPixKey.id!!)
+        transaction.exec { pixKeyRepository.deleteById(validatedPixKey.id!!) }
 
         responseObserver.onNext(RemoveKeyResponse.newBuilder().setSuccess(true).build())
         responseObserver.onCompleted()

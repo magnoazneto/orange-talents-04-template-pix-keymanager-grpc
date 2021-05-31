@@ -13,8 +13,7 @@ fun RemoveKeyRequest.validate(
     if(!possiblePixKey.isPresent)
         throw PixKeyNotFoundException("Chave pix não encontrada para o pixId: $pixId")
     val pixKey = possiblePixKey.get()
-    if(pixKey.accountData.holderId != externalClientId)
-        throw IllegalStateException("A chave só pode ser removida pelo próprio dono.")
+    check(pixKey.accountData.holderId == externalClientId) { "A chave só pode ser removida pelo próprio dono" }
 
     return pixKey
 }

@@ -18,11 +18,11 @@ fun PixKeyRequest.toValidPixKey(
 
     keyType.validate(pixKey)
 
-    if(accountType == AccountType.UNKNOW_ACCOUNT_TYPE) throw IllegalArgumentException("Tipo de Conta desconhecido")
+    require(accountType != AccountType.UNKNOW_ACCOUNT_TYPE) { "Tipo de Conta desconhecido" }
     if(pixKeyRepository.existsByKey(pixKey)) throw ExistingPixKeyException("Chave PIX igual já cadastrada")
 
     val response = itauClient.searchAccount(externalClientId, accountType.toString())
-    if (response.status == HttpStatus.NOT_FOUND) throw IllegalStateException("Conta não encontrada no ERP")
+    check(response.status != HttpStatus.NOT_FOUND){ "Conta não encontrada no ERP" }
 
     return PixKey(
         key = if(keyType != KeyType.RANDOM_KEY) pixKey else UUID.randomUUID().toString(),
