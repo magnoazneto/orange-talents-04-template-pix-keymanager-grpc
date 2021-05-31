@@ -21,7 +21,7 @@ fun PixKeyRequest.toValidPixKey(
     if(pixKeyRepository.existsByKey(pixKey)) throw ExistingPixKeyException("Chave PIX igual já cadastrada")
 
     val response = itauClient.searchAccount(externalClientId, accountType.toString())
-    if (response.status == HttpStatus.NOT_FOUND) throw IllegalArgumentException("Conta não encontrada no ERP")
+    if (response.status == HttpStatus.NOT_FOUND) throw IllegalStateException("Conta não encontrada no ERP")
 
     return PixKey(
         key = if(keyType != KeyType.RANDOM_KEY) pixKey else UUID.randomUUID().toString(),
