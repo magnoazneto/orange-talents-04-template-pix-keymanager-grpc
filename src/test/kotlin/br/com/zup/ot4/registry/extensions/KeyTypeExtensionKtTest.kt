@@ -4,18 +4,25 @@ import br.com.zup.ot4.AccountType
 import br.com.zup.ot4.KeyType
 import br.com.zup.ot4.PixKeyRequest
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 internal class KeyTypeExtensionKtTest{
 
-    @Test
-    fun `nao deve aceitar CPF em formato invalido`() {
-        val pixKey = PixKeyRequest.newBuilder()
-            .setPixKey("magno@gmail.com")
-            .setKeyType(KeyType.CPF)
+    lateinit var pixKey: PixKeyRequest.Builder
+
+    @BeforeEach
+    internal fun setUp() {
+        pixKey = PixKeyRequest.newBuilder()
             .setAccountType(AccountType.CONTA_CORRENTE)
             .setExternalClientId("aaa-bbb-ccc")
+    }
+
+    @Test
+    fun `nao deve aceitar CPF em formato invalido`() {
+        pixKey.setPixKey("magno@gmail.com")
+            .setKeyType(KeyType.CPF).build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
@@ -26,10 +33,8 @@ internal class KeyTypeExtensionKtTest{
 
     @Test
     fun `nao deve aceitar CPF em branco`() {
-        val pixKey = PixKeyRequest.newBuilder()
-            .setKeyType(KeyType.CPF)
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .setExternalClientId("aaa-bbb-ccc")
+        pixKey.setKeyType(KeyType.CPF)
+            .build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
@@ -40,11 +45,9 @@ internal class KeyTypeExtensionKtTest{
 
     @Test
     fun `nao deve aceitar EMAIL em formato invalido`() {
-        val pixKey = PixKeyRequest.newBuilder()
+        pixKey.setKeyType(KeyType.EMAIL)
             .setPixKey("magnogmail.com")
-            .setKeyType(KeyType.EMAIL)
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .setExternalClientId("aaa-bbb-ccc")
+            .build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
@@ -55,10 +58,8 @@ internal class KeyTypeExtensionKtTest{
 
     @Test
     fun `nao deve aceitar EMAIL em branco`() {
-        val pixKey = PixKeyRequest.newBuilder()
-            .setKeyType(KeyType.EMAIL)
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .setExternalClientId("aaa-bbb-ccc")
+        pixKey.setKeyType(KeyType.EMAIL)
+            .build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
@@ -69,11 +70,9 @@ internal class KeyTypeExtensionKtTest{
 
     @Test
     fun `nao deve aceitar CELULAR em formato invalido`() {
-        val pixKey = PixKeyRequest.newBuilder()
+        pixKey.setKeyType(KeyType.PHONE_NUMBER)
             .setPixKey("magnogmail.com")
-            .setKeyType(KeyType.PHONE_NUMBER)
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .setExternalClientId("aaa-bbb-ccc")
+            .build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
@@ -84,10 +83,8 @@ internal class KeyTypeExtensionKtTest{
 
     @Test
     fun `nao deve aceitar CELULAR em branco`() {
-        val pixKey = PixKeyRequest.newBuilder()
-            .setKeyType(KeyType.PHONE_NUMBER)
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .setExternalClientId("aaa-bbb-ccc")
+        pixKey.setKeyType(KeyType.PHONE_NUMBER)
+            .build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
@@ -98,11 +95,9 @@ internal class KeyTypeExtensionKtTest{
 
     @Test
     fun `nao deve aceitar CHAVE ALEATORIA preenchida`() {
-        val pixKey = PixKeyRequest.newBuilder()
-            .setKeyType(KeyType.RANDOM_KEY)
+        pixKey.setKeyType(KeyType.RANDOM_KEY)
             .setPixKey("magno@gmail.com")
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .setExternalClientId("aaa-bbb-ccc")
+            .build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
@@ -114,11 +109,8 @@ internal class KeyTypeExtensionKtTest{
 
     @Test
     fun `nao deve aceitar CHAVE DESCONHECIDA`() {
-        val pixKey = PixKeyRequest.newBuilder()
-            .setKeyType(KeyType.UNKNOW_KEY_TYPE)
-            .setPixKey("magno@gmail.com")
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .setExternalClientId("aaa-bbb-ccc")
+        pixKey.setKeyType(KeyType.UNKNOW_KEY_TYPE)
+            .build()
 
         assertThrows<IllegalArgumentException> {
             pixKey.keyType.validate(pixKey.pixKey)
