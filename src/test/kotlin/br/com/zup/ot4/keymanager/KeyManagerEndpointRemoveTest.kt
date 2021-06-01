@@ -5,6 +5,7 @@ import br.com.zup.ot4.KeyManagerServiceGrpc
 import br.com.zup.ot4.KeyType
 import br.com.zup.ot4.RemoveKeyRequest
 import br.com.zup.ot4.account.AccountData
+import br.com.zup.ot4.integrations.BcbClient
 import br.com.zup.ot4.pix.PixKey
 import br.com.zup.ot4.pix.PixKeyRepository
 import io.grpc.ManagedChannel
@@ -14,13 +15,17 @@ import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
 import io.micronaut.grpc.server.GrpcServerChannel
+import io.micronaut.http.HttpResponse
+import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
 
 import java.util.*
+import javax.inject.Inject
 
 @MicronautTest(transactional = false)
 internal class KeyManagerEndpointRemoveTest(
@@ -28,6 +33,8 @@ internal class KeyManagerEndpointRemoveTest(
     val grpcClient: KeyManagerServiceGrpc.KeyManagerServiceBlockingStub
 ) {
 
+    @Inject
+    private lateinit var bcbClient: BcbClient
 
     private lateinit var pixKey: PixKey
 
@@ -54,6 +61,9 @@ internal class KeyManagerEndpointRemoveTest(
         )
 
         pixKeyRepository.save(pixKey)
+
+        Mockito.`when`(bcbClient.registerPixKey(Mockito.any()))
+            .thenReturn(HttpResponse.ok())
     }
 
     @Test
@@ -94,6 +104,11 @@ internal class KeyManagerEndpointRemoveTest(
         }.let { e ->
             assertEquals(Status.FAILED_PRECONDITION.code, e.status.code)
         }
+    }
+
+    @MockBean(BcbClient::class)
+    fun bcbClient(): BcbClient? {
+        return Mockito.mock(BcbClient::class.java)
     }
 
     @Factory

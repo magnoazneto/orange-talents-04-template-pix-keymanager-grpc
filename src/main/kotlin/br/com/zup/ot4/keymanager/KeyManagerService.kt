@@ -32,8 +32,7 @@ class KeyManagerService(
 
         val responseBcb = bcbClient.registerPixKey(PixKeyBcbRequest(request, accountDataResponse.body()!!))
 
-        if(responseBcb.status == HttpStatus.UNPROCESSABLE_ENTITY)
-            throw ExistingPixKeyException("Chave pix já cadastrada no BCB")
+        check(responseBcb.status == HttpStatus.CREATED) { "Não foi possível cadastrar chave no BCB" }
 
         println(responseBcb.body())
         val newPixKey = PixKey(

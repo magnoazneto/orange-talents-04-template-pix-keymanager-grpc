@@ -5,7 +5,7 @@ import br.com.zup.ot4.account.AccountDataResponse
 import br.com.zup.ot4.pix.PixKey
 import br.com.zup.ot4.pix.extensions.toBcbType
 
-class PixKeyBcbRequest(
+data class PixKeyBcbRequest(
     val keyType: KeyTypeBcb,
     val key: String,
     val bankAccount: BankAccountBcb,
