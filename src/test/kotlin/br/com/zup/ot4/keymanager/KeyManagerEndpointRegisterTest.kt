@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
-import org.mockito.Mockito.any
 import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
@@ -38,6 +37,9 @@ internal class KeyManagerEndpointRegisterTest(
     val pixKeyRepository: PixKeyRepository,
     val grpcClient: KeyManagerServiceGrpc.KeyManagerServiceBlockingStub
 ){
+
+    private lateinit var pixKeyBcbRequest: PixKeyBcbRequest
+    private lateinit var pixRequest: PixKeyRequest
 
     @Inject
     lateinit var itauClient: ErpItauClient
@@ -52,56 +54,33 @@ internal class KeyManagerEndpointRegisterTest(
     @BeforeEach
     internal fun setUp() {
         pixKeyRepository.deleteAll()
-    }
 
-    /**
-     * deve registrar chave valida (happy path)
-     * nao deve registrar chave duplicada
-     * nao deve registrar chave pix quando nao encontrar dados do cliente
-     * nao deve registrar chave pix quando parametros forem invalidos
-     */
-
-
-    @Test // path 1/4 - deve registrar chave válida (happy path)
-    fun `deve registrar uma chave pix valida`() {
-        val pixRequest = PixKeyRequest.newBuilder()
+        pixRequest = PixKeyRequest.newBuilder()
             .setExternalClientId(CLIENT_ID.toString())
             .setKeyType(KeyType.EMAIL)
             .setPixKey("rponte@gmail.com")
             .setAccountType(AccountType.CONTA_CORRENTE)
             .build()
-        val pixKeyBcbRequest = PixKeyBcbRequest(pixRequest, accountDataResponse())
 
         `when`(itauClient.searchAccount(clienteId = CLIENT_ID.toString(), tipo = "CONTA_CORRENTE"))
             .thenReturn(HttpResponse.ok(accountDataResponse()))
 
+        pixKeyBcbRequest = PixKeyBcbRequest(pixRequest, accountDataResponse())
+
         `when`(bcbClient.registerPixKey(pixKeyBcbRequest))
             .thenReturn(HttpResponse.created(pixKeyBcbResponse()))
+    }
+
+
+    @Test // path 1/6 (happy path)
+    fun `deve registrar uma chave pix valida`() {
 
         val response = grpcClient.register(pixRequest)
-
-        with(response){
-            assertNotNull(pixId)
-        }
+        assertNotNull(response.pixId)
     }
 
-    @Test // path 2/4
+    @Test // path 2/6 - erp ok / bcb ok / chave duplicada
     fun `nao deve registrar uma chave pix duplicada`() {
-
-        val pixRequest = PixKeyRequest.newBuilder()
-            .setExternalClientId(CLIENT_ID.toString())
-            .setKeyType(KeyType.EMAIL)
-            .setPixKey("rponte@gmail.com")
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .build()
-
-        val pixKeyBcbRequest = PixKeyBcbRequest(pixRequest, accountDataResponse())
-
-        `when`(itauClient.searchAccount(clienteId = CLIENT_ID.toString(), tipo = "CONTA_CORRENTE"))
-            .thenReturn(HttpResponse.ok(accountDataResponse()))
-
-        `when`(bcbClient.registerPixKey(pixKeyBcbRequest))
-            .thenReturn(HttpResponse.created(pixKeyBcbResponse()))
 
         grpcClient.register(pixRequest)
 
@@ -112,22 +91,11 @@ internal class KeyManagerEndpointRegisterTest(
         assertEquals("Chave PIX igual já cadastrada", error.status.description)
     }
 
-    @Test // path 3/4
+    @Test // path 3/6 - erp !ok / bcb ok / dados ok
     fun `nao deve registrar chave pix quando nao encontrar dados da conta`() {
-        val pixRequest = PixKeyRequest.newBuilder()
-            .setExternalClientId(CLIENT_ID.toString())
-            .setKeyType(KeyType.EMAIL)
-            .setPixKey("rponte@gmail.com")
-            .setAccountType(AccountType.CONTA_CORRENTE)
-            .build()
-
-        val pixKeyBcbRequest = PixKeyBcbRequest(pixRequest, accountDataResponse())
 
         `when`(itauClient.searchAccount(clienteId = CLIENT_ID.toString(), tipo = "CONTA_CORRENTE"))
             .thenReturn(HttpResponse.notFound())
-
-        `when`(bcbClient.registerPixKey(pixKeyBcbRequest))
-            .thenReturn(HttpResponse.created(pixKeyBcbResponse()))
 
         val error = assertThrows<StatusRuntimeException> {
             grpcClient.register(pixRequest)
@@ -137,7 +105,7 @@ internal class KeyManagerEndpointRegisterTest(
         assertEquals("Conta não encontrada no ERP", error.status.description)
     }
 
-    @Test // path 4/4
+    @Test // path 4/6 - erp ok / bcb ok / dados invalidos
     fun `nao deve registrar chave pix quando dados forem invalidos`() {
         val pixRequest = PixKeyRequest.newBuilder()
             .setExternalClientId(CLIENT_ID.toString())
@@ -146,20 +114,40 @@ internal class KeyManagerEndpointRegisterTest(
             .setAccountType(AccountType.CONTA_CORRENTE)
             .build()
 
-        val pixKeyBcbRequest = PixKeyBcbRequest(pixRequest, accountDataResponse())
-
-        `when`(itauClient.searchAccount(clienteId = CLIENT_ID.toString(), tipo = "CONTA_CORRENTE"))
-            .thenReturn(HttpResponse.ok(accountDataResponse()))
-
-        `when`(bcbClient.registerPixKey(pixKeyBcbRequest))
-            .thenReturn(HttpResponse.created(pixKeyBcbResponse()))
-
         assertThrows<StatusRuntimeException> {
             grpcClient.register(pixRequest)
         }.let { e ->
             assertEquals(Status.INVALID_ARGUMENT.code, e.status.code)
             assertEquals("Email precisa ser válido", e.status.description)
         }
+    }
+
+    @Test // path 5/6 - erp ok / bcb !ok / dados ok
+    fun `nao deve registrar chave pix quando ja existir chave no BCB`() {
+
+        `when`(bcbClient.registerPixKey(pixKeyBcbRequest))
+            .thenReturn(HttpResponse.unprocessableEntity())
+
+        val error = assertThrows<StatusRuntimeException> {
+            grpcClient.register(pixRequest)
+        }
+
+        assertEquals(Status.FAILED_PRECONDITION.code, error.status.code)
+        assertEquals("Chave PIX já cadastrada no BCB", error.status.description)
+    }
+
+    @Test // path 6/6 - erp ok / bcb !ok / dados ok
+    fun `nao deve registrar chave pix quando BCB retornar erro`() {
+
+        `when`(bcbClient.registerPixKey(pixKeyBcbRequest))
+            .thenReturn(HttpResponse.badRequest())
+
+        val error = assertThrows<StatusRuntimeException> {
+            grpcClient.register(pixRequest)
+        }
+
+        assertEquals(Status.FAILED_PRECONDITION.code, error.status.code)
+        assertEquals("Não foi possível cadastrar chave no BCB", error.status.description)
     }
 
     @MockBean(ErpItauClient::class)

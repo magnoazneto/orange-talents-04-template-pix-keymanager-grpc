@@ -29,9 +29,12 @@ class KeyManagerService(
 
         val accountDataResponse = itauClient.searchAccount(request.externalClientId, request.accountType.toString())
         check(accountDataResponse.status != HttpStatus.NOT_FOUND){ "Conta não encontrada no ERP" }
+        check(accountDataResponse.status == HttpStatus.OK){ "Erro ao buscar dados da conta no ERP" }
 
         val responseBcb = bcbClient.registerPixKey(PixKeyBcbRequest(request, accountDataResponse.body()!!))
 
+
+        check(responseBcb.status != HttpStatus.UNPROCESSABLE_ENTITY) { "Chave PIX já cadastrada no BCB" }
         check(responseBcb.status == HttpStatus.CREATED) { "Não foi possível cadastrar chave no BCB" }
 
         println(responseBcb.body())

@@ -1,11 +1,10 @@
 package br.com.zup.ot4.keymanager
 
-import br.com.zup.ot4.AccountType
-import br.com.zup.ot4.KeyManagerServiceGrpc
-import br.com.zup.ot4.KeyType
-import br.com.zup.ot4.RemoveKeyRequest
+import br.com.zup.ot4.*
 import br.com.zup.ot4.account.AccountData
 import br.com.zup.ot4.integrations.BcbClient
+import br.com.zup.ot4.integrations.bcbTypes.DeletePixKeyBcbRequest
+import br.com.zup.ot4.integrations.bcbTypes.PixKeyBcbRequest
 import br.com.zup.ot4.pix.PixKey
 import br.com.zup.ot4.pix.PixKeyRepository
 import io.grpc.ManagedChannel
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 
 import java.util.*
 import javax.inject.Inject
@@ -62,8 +62,8 @@ internal class KeyManagerEndpointRemoveTest(
 
         pixKeyRepository.save(pixKey)
 
-        Mockito.`when`(bcbClient.registerPixKey(Mockito.any()))
-            .thenReturn(HttpResponse.ok())
+        `when`(bcbClient.removePixKey(pixKey.key, DeletePixKeyBcbRequest(pixKey.key, pixKey.accountData.ispb)))
+            .thenReturn(HttpResponse.ok(RemoveKeyResponse.newBuilder().setSuccess(true).build()))
     }
 
     @Test

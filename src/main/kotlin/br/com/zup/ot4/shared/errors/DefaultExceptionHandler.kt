@@ -15,7 +15,7 @@ class DefaultExceptionHandler : ExceptionHandler<Exception> {
             is ConstraintViolationException -> Status.INVALID_ARGUMENT.withDescription(e.message)
             is ExistingPixKeyException -> Status.ALREADY_EXISTS.withDescription(e.message)
             is PixKeyNotFoundException -> Status.NOT_FOUND.withDescription(e.message)
-            else -> Status.UNKNOWN
+            else -> Status.UNKNOWN.withDescription(e.message)
         }
         return StatusWithDetails(status.withCause(e))
     }
