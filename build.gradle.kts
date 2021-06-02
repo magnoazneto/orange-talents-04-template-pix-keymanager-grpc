@@ -50,6 +50,7 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     testImplementation("org.mockito:mockito-core:3.8.0")
     implementation("io.micronaut.xml:micronaut-jackson-xml")
+    implementation("org.apache.commons:commons-csv:1.5")
 
 }
 

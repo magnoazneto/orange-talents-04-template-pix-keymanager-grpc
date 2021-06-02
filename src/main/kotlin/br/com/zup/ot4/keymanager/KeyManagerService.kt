@@ -7,6 +7,7 @@ import br.com.zup.ot4.integrations.bcbTypes.DeletePixKeyBcbRequest
 import br.com.zup.ot4.integrations.bcbTypes.PixKeyBcbRequest
 import br.com.zup.ot4.keymanager.registry.validateRequestParams
 import br.com.zup.ot4.keymanager.remove.validate
+import br.com.zup.ot4.keymanager.search.Organizations
 import br.com.zup.ot4.keymanager.search.validateKey
 import br.com.zup.ot4.keymanager.search.validatePixData
 import br.com.zup.ot4.pix.PixKey
@@ -129,7 +130,7 @@ class KeyManagerService(
                 .setOwnerName(pixKey.owner.name)
                 .setOwnerCpf(pixKey.owner.taxIdNumber)
                 .setAccountData(AccountData.newBuilder()
-                    .setOrganizationName(pixKey.bankAccount.participant)
+                    .setOrganizationName(Organizations.name(pixKey.bankAccount.participant))
                     .setBranch(pixKey.bankAccount.branch)
                     .setAccountNumber(pixKey.bankAccount.accountNumber)
                     .setAccountType(pixKey.bankAccount.accountType.toInternalType())
