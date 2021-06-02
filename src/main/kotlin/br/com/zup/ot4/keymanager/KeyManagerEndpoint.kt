@@ -31,4 +31,15 @@ class KeyManagerEndpoint(
         responseObserver.onNext(RemoveKeyResponse.newBuilder().setSuccess(true).build())
         responseObserver.onCompleted()
     }
+
+    override fun search(
+        request: SearchKeyRequest,
+        responseObserver: StreamObserver<SearchKeyResponse>
+    ) {
+        val response: SearchKeyResponse = keyManagerService.search(request)
+        with(responseObserver) {
+            onNext(response)
+            onCompleted()
+        }
+    }
 }

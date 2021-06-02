@@ -7,9 +7,41 @@ option objc_class_prefix = "HLW";
 
 package br.com.zup.ot4;
 
+import "google/protobuf/timestamp.proto";
+
 service KeyManagerService {
   rpc register(PixKeyRequest) returns (PixKeyResponse) {}
   rpc remove(RemoveKeyRequest) returns (RemoveKeyResponse) {}
+  rpc search(SearchKeyRequest) returns (SearchKeyResponse) {}
+}
+
+message SearchKeyRequest {
+  message PixData {
+    string externalClientId = 1;
+    string pixId = 2;
+  }
+  oneof pixFilter {
+    PixData pixData = 1;
+    string key = 2;
+  }
+}
+
+message SearchKeyResponse {
+  string pixId = 1;
+  string externalClientId = 2;
+  KeyType keyType = 3;
+  string key = 4;
+  string ownerName = 5;
+  string ownerCpf = 6;
+  AccountData accountData = 7;
+  google.protobuf.Timestamp createdAt = 8;
+}
+
+message AccountData {
+  string organizationName = 1;
+  string branch = 2;
+  string accountNumber = 3;
+  AccountType accountType = 4;
 }
 
 enum KeyType {
