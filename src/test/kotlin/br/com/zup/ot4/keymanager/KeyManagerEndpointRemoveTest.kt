@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+import java.time.LocalDateTime
 
 import java.util.*
 import javax.inject.Inject
@@ -57,7 +58,8 @@ internal class KeyManagerEndpointRemoveTest(
                 CLIENT_ID.toString(),
                 "Magno Azevedo",
                 "00000000000"
-            )
+            ),
+            LocalDateTime.now()
         )
 
         pixKeyRepository.save(pixKey)

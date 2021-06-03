@@ -191,6 +191,6 @@ internal class KeyManagerEndpointRegisterTest(
     }
 
     private fun pixKey(): PixKey {
-        return PixKey("rponte@gmail.com", KeyType.EMAIL, accountDataResponse().toModel())
+        return PixKey("rponte@gmail.com", KeyType.EMAIL, accountDataResponse().toModel(), LocalDateTime.now())
     }
 }
