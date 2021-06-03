@@ -80,21 +80,21 @@ class KeyManagerService(
 
     private fun searchByPixData(request: SearchKeyRequest): SearchKeyResponse {
         val pixKey = request.validatePixData(pixKeyRepository, bcbClient)
-        return pixKey.toSearchKeyResponse()
+        return KeyConverter.toSearchKeyResponse(pixKey)
     }
 
     private fun searchByKey(request: SearchKeyRequest): SearchKeyResponse{
         val possiblePixKey = request.validateKey(pixKeyRepository)
         return if(possiblePixKey.isPresent){
             val pixKey = possiblePixKey.get()
-            pixKey.toSearchKeyResponse()
+            KeyConverter.toSearchKeyResponse(pixKey)
         } else {
             val responseBcb = bcbClient.searchPixKey(request.key)
             check(responseBcb.status != HttpStatus.NOT_FOUND) { "A chave ${request.key} não está registrada no Bacen nem no sistema interno"}
             check(responseBcb.status == HttpStatus.OK) { "Erro de comunicação com o Bacen" }
 
             val pixKeyBcb = responseBcb.body()!!
-            pixKeyBcb.toSearchKeyResponse()
+            KeyConverter.toSearchKeyResponse(pixKeyBcb)
         }
     }
 

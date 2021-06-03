@@ -22,28 +22,4 @@ class PixKey(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
     val uuid: UUID = UUID.randomUUID()
-
-    fun toSearchKeyResponse(): SearchKeyResponse {
-        val createdAtInstant = createdAt.atZone(ZoneId.of("UTC")).toInstant()
-        return SearchKeyResponse.newBuilder()
-            .setPixId(uuid.toString())
-            .setExternalClientId(accountData.holderId)
-            .setKeyType(keyType)
-            .setKey(key)
-            .setOwnerName(accountData.holderName)
-            .setOwnerCpf(accountData.holderCpf)
-            .setAccountData(
-                br.com.zup.ot4.AccountData.newBuilder()
-                .setOrganizationName(accountData.organizationName)
-                .setBranch(accountData.agency)
-                .setAccountNumber(accountData.accountNumber)
-                .setAccountType(accountData.accountType)
-            )
-            .setCreatedAt(
-                Timestamp.newBuilder()
-                .setSeconds(createdAtInstant.epochSecond)
-                .setNanos(createdAtInstant.nano)
-                .build())
-            .build()
-    }
 }
