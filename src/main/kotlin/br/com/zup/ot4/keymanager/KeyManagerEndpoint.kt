@@ -42,4 +42,19 @@ class KeyManagerEndpoint(
             onCompleted()
         }
     }
+
+    override fun searchAll(
+        request: SearchAllRequest,
+        responseObserver: StreamObserver<SearchAllResponse>
+    ) {
+        require(!request.externalClientId.isNullOrBlank()){
+            "Cliente ID não pode ser nulo ou vazio"
+        }
+        val response = keyManagerService.searchAll(request)
+
+        with(responseObserver){
+            onNext(response)
+            onCompleted()
+        }
+    }
 }

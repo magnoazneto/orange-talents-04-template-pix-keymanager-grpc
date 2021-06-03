@@ -13,6 +13,24 @@ service KeyManagerService {
   rpc register(PixKeyRequest) returns (PixKeyResponse) {}
   rpc remove(RemoveKeyRequest) returns (RemoveKeyResponse) {}
   rpc search(SearchKeyRequest) returns (SearchKeyResponse) {}
+  rpc searchAll(SearchAllRequest) returns (SearchAllResponse) {}
+}
+
+message SearchAllRequest {
+  string externalClientId = 1;
+}
+
+message SearchAllResponse {
+  message PixDetails {
+    string pixId = 1;
+    string externalClientId = 2;
+    KeyType keyType = 3;
+    string key = 4;
+    AccountType accountType = 5;
+    google.protobuf.Timestamp createdAt = 6;
+  }
+
+  repeated PixDetails keys = 1;
 }
 
 message SearchKeyRequest {

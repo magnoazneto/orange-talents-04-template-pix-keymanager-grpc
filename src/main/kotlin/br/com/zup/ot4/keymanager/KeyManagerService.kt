@@ -10,6 +10,7 @@ import br.com.zup.ot4.keymanager.registry.validateRequestParams
 import br.com.zup.ot4.keymanager.remove.validate
 import br.com.zup.ot4.keymanager.search.validateKey
 import br.com.zup.ot4.keymanager.search.validatePixData
+import br.com.zup.ot4.pix.KeyConverter
 import br.com.zup.ot4.pix.PixKey
 import br.com.zup.ot4.pix.PixKeyRepository
 import br.com.zup.ot4.shared.Transaction
@@ -70,6 +71,13 @@ class KeyManagerService(
         }
     }
 
+    fun searchAll(request: SearchAllRequest): SearchAllResponse {
+        val keys = pixKeyRepository.findAllByOwnerId(request.externalClientId)
+        return SearchAllResponse.newBuilder()
+            .addAllKeys(keys.map { KeyConverter.toPixDetails(it) })
+            .build()
+    }
+
     private fun searchByPixData(request: SearchKeyRequest): SearchKeyResponse {
         val pixKey = request.validatePixData(pixKeyRepository, bcbClient)
         return pixKey.toSearchKeyResponse()
@@ -89,4 +97,6 @@ class KeyManagerService(
             pixKeyBcb.toSearchKeyResponse()
         }
     }
+
+
 }
