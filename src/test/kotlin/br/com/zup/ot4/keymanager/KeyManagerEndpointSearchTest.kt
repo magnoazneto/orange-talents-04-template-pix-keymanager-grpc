@@ -71,7 +71,7 @@ internal class KeyManagerEndpointSearchTest(
     }
 
 
-    @Test // 1/13 - happy path
+    @Test // 1/10- happy path
     fun `deve retornar chave pix para chave valida`() {
         val response = grpcClient.search(
             SearchKeyRequest.newBuilder()
@@ -81,7 +81,7 @@ internal class KeyManagerEndpointSearchTest(
         assertEquals(pixKey.accountData.holderId,response.externalClientId)
     }
 
-    @Test // path 2/13
+    @Test // path 2/10
     fun `deve retornar chave pix para pixId e clientId validos`() {
         val response = grpcClient.search(
                 SearchKeyRequest.newBuilder()
@@ -94,7 +94,7 @@ internal class KeyManagerEndpointSearchTest(
         assertEquals(pixKey.key ,response.key)
     }
 
-    @Test // path 3/13
+    @Test // path 3/10
     fun `nao deve retornar chave pix quando faltarem dados`() {
         assertThrows<StatusRuntimeException> {
             grpcClient.search(SearchKeyRequest.newBuilder().build())
@@ -105,7 +105,7 @@ internal class KeyManagerEndpointSearchTest(
     }
     //
 
-    @Test // path 4/13
+    @Test // path 4/10
     fun `nao deve retornar chave quando apenas pixId for informado no PixData`() {
         assertThrows<StatusRuntimeException> {
             grpcClient.search(SearchKeyRequest.newBuilder()
@@ -119,7 +119,7 @@ internal class KeyManagerEndpointSearchTest(
 
     }
 
-    @Test // path 5/13
+    @Test // path 5/10
     fun `nao deve retornar chave quando apenas externalClientId for informado no PixData`() {
         assertThrows<StatusRuntimeException> {
             grpcClient.search(SearchKeyRequest.newBuilder()
@@ -132,7 +132,7 @@ internal class KeyManagerEndpointSearchTest(
         }
     }
 
-    @Test // path 6/13
+    @Test // path 6/10
     fun `nao deve retornar chave se chave nao existir no banco`() {
         assertThrows<StatusRuntimeException> {
             grpcClient.search(SearchKeyRequest.newBuilder()
@@ -147,7 +147,7 @@ internal class KeyManagerEndpointSearchTest(
 
     }
 
-    @Test // path 7/13
+    @Test // path 7/10
     fun `nao deve retornar chave de um proprietario diferente`() {
         assertThrows<StatusRuntimeException> {
             grpcClient.search(SearchKeyRequest.newBuilder()
@@ -162,7 +162,7 @@ internal class KeyManagerEndpointSearchTest(
 
     }
 
-    @Test // path 8/13
+    @Test // path 8/10
     fun `nao deve retornar chave se nao houver registro no BCB`() {
         val randomKey = UUID.randomUUID().toString()
 
@@ -179,7 +179,7 @@ internal class KeyManagerEndpointSearchTest(
         }
     }
 
-    @Test // path 9/13
+    @Test // path 9/10
     fun `nao deve retornar chave caso conexao com o BCB retorne erro`() {
         val randomKey = UUID.randomUUID().toString()
 
