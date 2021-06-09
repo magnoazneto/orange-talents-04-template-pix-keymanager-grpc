@@ -8,17 +8,28 @@ services:
     image: "public.ecr.aws/d8b2x5c9/orange-stack-sat-itau-erp"
     ports:
       - 9091:9091
-  postgres-keymanager:
-    image: 'postgres:alpine'
-    volumes:
-      - keymanager-volume:/var/lib/postgresql/data
+#  postgres-keymanager:
+#    image: 'postgres:alpine'
+#    volumes:
+#      - keymanager-volume:/var/lib/postgresql/data
+#    ports:
+#      - 5432:5432
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: root
+#      POSTGRES_DB: keymanager-db
+#      POSTGRES_HOST: postgres
+  orangedb:
+    image: mysql:5.7
+    container_name: orangedb
+    expose:
+      - "3308"
     ports:
-      - 5432:5432
+      - "3308:3306"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: keymanager-db
-      POSTGRES_HOST: postgres
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=mercado_livre
+
 
 volumes:
   keymanager-volume:

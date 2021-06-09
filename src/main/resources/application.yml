@@ -3,11 +3,30 @@ micronaut:
     name: keyManager
 datasources:
   default:
-    url: jdbc:postgresql://localhost:5432/keymanager-db
-    driverClassName: org.postgresql.Driver
-    username: postgres
+    url: jdbc:mysql://localhost:3308/orangedb
+#    url: jdbc:postgresql://localhost:5432/keymanager-db
+#    driverClassName: org.postgresql.Driver
+    username: root
     password: root
-    dialect: POSTGRES
+    driverClassName: com.mysql.cj.jdbc.Driver
+#    dialect: POSTGRES
+#    username: postgres
+#    password: root
+#    dialect: POSTGRES
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        ddl-auto: update
+      format_sql: true
+    show-sql: true
+
+
 jpa.default.properties.hibernate.hbm2ddl.auto: create-drop
 erp-itau.host: http://localhost:9091/api/v1/
 bcb.host: http://localhost:8082/api/v1/pix/keys
+
+logger:
+  levels:
+    io.micronaut.transaction: DEBUG

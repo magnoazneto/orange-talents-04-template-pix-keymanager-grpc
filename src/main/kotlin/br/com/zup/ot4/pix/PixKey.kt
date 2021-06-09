@@ -11,6 +11,7 @@ import javax.persistence.*
 
 @Entity
 class PixKey(
+    @Column(name = "pixKey")
     val key: String,
     @field:Enumerated(EnumType.STRING)
     val keyType: KeyType,
@@ -21,5 +22,6 @@ class PixKey(
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+    @Column(name = "pixId", updatable = false, nullable = false, unique = true, columnDefinition = "BINARY(16)")
     val uuid: UUID = UUID.randomUUID()
 }
